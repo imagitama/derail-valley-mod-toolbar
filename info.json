@@ -1,0 +1,9 @@
+{
+	"Id": "DerailValleyModToolbar",
+	"Version": "1.0.0",
+	"DisplayName": "DerailValleyModToolbar",
+	"Author": "Jared Williams",
+	"EntryMethod": "DerailValleyModToolbar.Main.Load",
+	"ManagerVersion": "0.32.4",
+	"Repository": "https://raw.githubusercontent.com/imagitama/derail-valley-mod-toolbar/main/repository.json"
+}
