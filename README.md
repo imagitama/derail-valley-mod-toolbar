@@ -1,8 +1,8 @@
 # Derail Valley Mod Toolbar
 
-A framework mod for the game [Derail Valley](https://store.steampowered.com/app/588030/Derail_Valley/) to let mod authors add controls to the in-game UI.
+A framework mod for the game [Derail Valley](https://store.steampowered.com/app/588030/Derail_Valley/) to let mod authors add standard controls to a toolbar that open standard panels.
 
-It is designed to be very easy and quick to add new controls.
+![](./screenshot.png)
 
 ## Install
 
@@ -14,7 +14,7 @@ Download the zip and use Unity Mod Manager to install it.
 2. In your mod's `Load` register your mod and add your controls
 3. Run game!
 
-_Note: label is only used when you don't specify an icon and it is abbreviated (eg. "Universal JATO" becomes "UT" and "Utilities" becomes "UT")._
+_Note: label is only used when you don't specify an icon and it is abbreviated (eg. "Universal JATO" becomes "UJ" and "Utilities" becomes "UT")._
 
 Simple panel:
 
@@ -28,7 +28,7 @@ public static class Main
         ModToolbarAPI
             .Register(modEntry)
             .AddPanelControl(
-                label: "ABC",
+                label: "My Awesome Mod",
                 icon: "icon.png", // relative to mod dir
                 tooltip: "This is my awesome button!",
                 onGUIContent: rect =>
@@ -52,21 +52,21 @@ You can also add a button with an onClick:
 ModToolbarAPI.AddControl(
     label: "ABC",
     icon: null,
-    tooltip: "Click me plz!!",
+    tooltip: "Click me plz!",
     onClick: () =>
     {
         modEntry.Logger.Log("You clicked me :)");
-    })
+    });
 ```
 
-Or you if you want to re-use an existing window (it still gets inserted into a panel):
+If you want a bit more control over your editor you can supply your own panel:
 
 ```cs
-class MyAwesomeWindow : IModToolbarPanel
+class MyAwesomePanel : IModToolbarPanel
 {
     public void Window(Rect rect)
     {
-        GUILayout.Label("This is a window!");
+        GUILayout.Label("This is my panel!");
     }
 }
 
@@ -74,8 +74,8 @@ ModToolbarAPI.AddPanelControl(
     label: "ABC",
     icon: null,
     tooltip: "This is my awesome button!",
-    type: MyAwesomeWindow,
-    title: "My window");
+    type: MyAwesomePanel,
+    title: "My panel");
 ```
 
 ## Development
@@ -94,3 +94,4 @@ Created in VSCode (with C# and C# Dev Kit extensions) and MSBuild.
 
 - use in-game toolbar (like for weather)
 - panel resize
+- adapt panel to content size
