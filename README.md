@@ -8,6 +8,12 @@ A framework mod for the game [Derail Valley](https://store.steampowered.com/app/
 
 Download the zip and use Unity Mod Manager to install it.
 
+## Patched mods
+
+Some popular mods are automatically patched to use this mod:
+
+- [DV Utilites](https://github.com/mricher-git/dv-utilities-mod)
+
 ## Using it in your mod
 
 1. Add a dependency to this mod and ensure your mod loads after it

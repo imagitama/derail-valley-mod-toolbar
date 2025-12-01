@@ -9,8 +9,8 @@ public class Toolbar : MonoBehaviour
     private static ModEntry.ModLogger Logger => Main.ModEntry.Logger;
     private readonly List<RuntimeElement> elements = new();
 
-    private const float ButtonSize = 40f;
-    private const float Margin = 5f;
+    public static float ButtonSize = 40f;
+    public static float Margin = 5f;
 
     void Awake()
     {

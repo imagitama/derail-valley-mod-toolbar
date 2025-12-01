@@ -12,12 +12,12 @@ public interface IModToolbarPanel
 public class ModToolbarWindow : MonoBehaviour
 {
     private static ModEntry.ModLogger Logger => Main.ModEntry.Logger;
-    public string Title;
+    public string Title = "";
     public Action<Rect>? Content;
     public int Width = Main.settings.DefaultWidth;
     public int Height = Main.settings.DefaultHeight;
     private bool showGui = false;
-    private Rect windowRect = new Rect(20, 30, 0, 0);
+    private Rect windowRect = new Rect(0, 0, 0, 0);
     private Vector2 scrollPosition;
     public static int LastWindowId = 800;
     public int WindowID = LastWindowId++;
@@ -29,11 +29,18 @@ public class ModToolbarWindow : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(this);
+        Position();
+    }
+
+    void Position()
+    {
+        windowRect = new Rect(Toolbar.Margin, Toolbar.Margin + Toolbar.ButtonSize + Toolbar.Margin, Width, Height);
     }
 
     void Start()
     {
         Logger.Log($"Create window title={Title} content={Content} id={WindowID} width={Width} height={Height}");
+        Position();
     }
 
     void OnGUI()
@@ -56,20 +63,44 @@ public class ModToolbarWindow : MonoBehaviour
 
     void Window(int windowId)
     {
-        scrollPosition = GUILayout.BeginScrollView(
-            scrollPosition,
-            GUILayout.Width(Width + GUI.skin.verticalScrollbar.fixedWidth),
-            GUILayout.Height(Height + GUI.skin.horizontalScrollbar.fixedHeight)
-        );
+        float maxHeight = Screen.height * 0.9f;
+        float maxWidth = Screen.width * 0.9f;
 
-        GUILayout.BeginVertical();
+        if (Event.current.type == EventType.Repaint)
+        {
+            GUILayout.BeginVertical();
+            Content?.Invoke(windowRect);
+            GUILayout.EndVertical();
 
-        Content?.Invoke(windowRect);
+            var r = GUILayoutUtility.GetLastRect();
+            float targetWidth = Mathf.Min(r.width + 20f, maxWidth);
+            float targetHeight = Mathf.Min(r.height + 20f, maxHeight);
 
-        GUILayout.EndVertical();
+            Width = (int)targetWidth;
+            Height = (int)targetHeight;
 
-        GUILayout.EndScrollView();
+            windowRect.width = Width;
+            windowRect.height = Height;
+        }
+
+        bool needsScroll = Height >= maxHeight;
+
+        if (needsScroll)
+        {
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+            GUILayout.BeginVertical();
+            Content?.Invoke(windowRect);
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+        }
+        else
+        {
+            GUILayout.BeginVertical();
+            Content?.Invoke(windowRect);
+            GUILayout.EndVertical();
+        }
 
         GUI.DragWindow();
     }
+
 }

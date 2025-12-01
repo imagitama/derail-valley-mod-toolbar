@@ -24,6 +24,8 @@ public static class UtilitiesMod_Patcher
 
     private static void PatchOnGUI(Harmony harmony, System.Type utilType)
     {
+        Logger.Log($"Patching UtilitiesMod.OnGUI...");
+
         var onGuiMethod = AccessTools.Method(utilType, "OnGUI");
         if (onGuiMethod == null)
         {

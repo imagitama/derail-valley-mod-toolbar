@@ -14,7 +14,7 @@ public static class ModToolbarAPI
 
     public static ModRegistration Register(ModEntry mod)
     {
-        Logger.Log($"Register mod '{mod}' {mod.Info.Id} {mod.Info.DisplayName}");
+        Logger.Log($"Register mod {mod.Info.Id}");
         return new ModRegistration(mod);
     }
 
@@ -30,7 +30,7 @@ public static class ModToolbarAPI
 
         foreach (var def in defs)
         {
-            Logger.Log($"Add def '{def}'");
+            Logger.Log($"Add def '{def.Label}'");
             var runtime = RuntimeFactory.Create(mod, def);
             list.Add(runtime);
         }
@@ -38,7 +38,7 @@ public static class ModToolbarAPI
 
     public static void Unregister(ModEntry mod)
     {
-        Logger.Log($"Unregister mod '{mod}'");
+        Logger.Log($"Unregister mod '{mod.Info.Id}'");
         if (!Active.TryGetValue(mod, out var list))
             return;
 
@@ -237,7 +237,7 @@ public static class RuntimeFactory
 
     public static RuntimeElement Create(ModEntry mod, ElementDefinition def)
     {
-        Logger.Log($"RuntimeFactory.Create mod={mod} def={def}");
+        Logger.Log($"RuntimeFactory.Create mod={mod.Info.Id} def={def}");
 
         if (def is ControlDefinition c)
             return CreateControl(c);
@@ -258,7 +258,7 @@ public static class RuntimeFactory
             OnClick = def.OnClick
         };
 
-        Main.toolbar.AddElement(runtime);
+        Main.toolbar!.AddElement(runtime);
         return runtime;
     }
 
@@ -298,7 +298,7 @@ public static class RuntimeFactory
             ModToolbarWindow = win
         };
 
-        Main.toolbar.AddElement(runtime);
+        Main.toolbar!.AddElement(runtime);
 
         Logger.Log($"RuntimeFactory.CreatePanel done go={go}");
 

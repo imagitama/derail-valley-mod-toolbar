@@ -1,6 +1,6 @@
 {
 	"Id": "DerailValleyModToolbar",
-	"Version": "1.0.0",
+	"Version": "1.0.1",
 	"DisplayName": "DerailValleyModToolbar",
 	"Author": "Jared Williams",
 	"EntryMethod": "DerailValleyModToolbar.Main.Load",
