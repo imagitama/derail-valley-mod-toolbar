@@ -1,3 +1,7 @@
+# 1.0.2
+
+- fixed panel glitching
+
 # 1.0.1
 
 - improved panel dimensions

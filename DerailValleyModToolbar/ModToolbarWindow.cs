@@ -66,18 +66,28 @@ public class ModToolbarWindow : MonoBehaviour
         float maxHeight = Screen.height * 0.9f;
         float maxWidth = Screen.width * 0.9f;
 
+        GUILayout.BeginVertical();
+
+        GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+        GUILayout.BeginVertical();
+
+        var contentRect = GUILayoutUtility.GetRect(
+            0, 99999,
+            0, 99999,
+            GUILayout.ExpandWidth(true),
+            GUILayout.ExpandHeight(false)
+        );
+
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
+
         if (Event.current.type == EventType.Repaint)
         {
-            GUILayout.BeginVertical();
-            Content?.Invoke(windowRect);
-            GUILayout.EndVertical();
+            float tw = Mathf.Min(contentRect.width + 20f, maxWidth);
+            float th = Mathf.Min(contentRect.height + 20f, maxHeight);
 
-            var r = GUILayoutUtility.GetLastRect();
-            float targetWidth = Mathf.Min(r.width + 20f, maxWidth);
-            float targetHeight = Mathf.Min(r.height + 20f, maxHeight);
-
-            Width = (int)targetWidth;
-            Height = (int)targetHeight;
+            Width = (int)tw;
+            Height = (int)th;
 
             windowRect.width = Width;
             windowRect.height = Height;
@@ -86,21 +96,17 @@ public class ModToolbarWindow : MonoBehaviour
         bool needsScroll = Height >= maxHeight;
 
         if (needsScroll)
-        {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
-            GUILayout.BeginVertical();
-            Content?.Invoke(windowRect);
-            GUILayout.EndVertical();
+
+        GUILayout.BeginVertical();
+        Content?.Invoke(windowRect);
+        GUILayout.EndVertical();
+
+        if (needsScroll)
             GUILayout.EndScrollView();
-        }
-        else
-        {
-            GUILayout.BeginVertical();
-            Content?.Invoke(windowRect);
-            GUILayout.EndVertical();
-        }
+
+        GUILayout.EndVertical();
 
         GUI.DragWindow();
     }
-
 }
