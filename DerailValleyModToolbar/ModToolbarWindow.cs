@@ -13,7 +13,7 @@ public class ModToolbarWindow : MonoBehaviour
 {
     private static ModEntry.ModLogger Logger => Main.ModEntry.Logger;
     public string Title = "";
-    public Action<Rect>? Content;
+    public Action<Rect>? DrawContent;
     public int Width = Main.settings.DefaultWidth;
     public int Height = Main.settings.DefaultHeight;
     private bool showGui = false;
@@ -29,18 +29,18 @@ public class ModToolbarWindow : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(this);
-        Position();
+        Reposition();
     }
 
-    void Position()
+    void Reposition()
     {
         windowRect = new Rect(Toolbar.Margin, Toolbar.Margin + Toolbar.ButtonSize + Toolbar.Margin, Width, Height);
     }
 
     void Start()
     {
-        Logger.Log($"Create window title={Title} content={Content} id={WindowID} width={Width} height={Height}");
-        Position();
+        Logger.Log($"Create window title={Title} content={DrawContent} id={WindowID} width={Width} height={Height}");
+        Reposition();
     }
 
     void OnGUI()
@@ -99,7 +99,7 @@ public class ModToolbarWindow : MonoBehaviour
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
         GUILayout.BeginVertical();
-        Content?.Invoke(windowRect);
+        DrawContent?.Invoke(windowRect);
         GUILayout.EndVertical();
 
         if (needsScroll)

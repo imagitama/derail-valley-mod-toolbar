@@ -39,17 +39,23 @@ public static class ModToolbarAPI
     public static void Unregister(ModEntry mod)
     {
         Logger.Log($"Unregister mod '{mod.Info.Id}'");
+
         if (!Active.TryGetValue(mod, out var list))
             return;
 
         foreach (var element in list)
         {
-            Logger.Log($"Destroy '{element}'");
+            Logger.Log($"Destroy element={element}");
+
             RuntimeFactory.Destroy(element);
+
+            Main.toolbar!.RemoveElement(element);
         }
 
         Logger.Log($"Remove mod '{mod}'");
         Active.Remove(mod);
+
+        Logger.Log($"Unregistered mod '{mod.Info.Id}' successfully");
     }
 }
 
@@ -64,7 +70,7 @@ public sealed class ModRegistration
         _mod = mod;
     }
 
-    public ModRegistration AddControlInternal(string label, Texture2D? icon, string tooltip, Action onClick)
+    private ModRegistration AddControlInternal(string label, Texture2D? icon, string tooltip, Action onClick)
     {
         Logger.Log($"ModRegistration.AddControl label={label} icon={icon} tooltip={tooltip} onClick={onClick}");
 
@@ -178,11 +184,16 @@ public sealed class ModRegistration
 public abstract class ElementDefinition
 {
     private string _label = string.Empty;
+    private string _actualLabel = string.Empty;
 
     public string Label
     {
         get => _label;
-        set => _label = TransformLabel(value);
+        set
+        {
+            _actualLabel = value;
+            _label = TransformLabel(value);
+        }
     }
 
     public Texture2D? Icon;
@@ -207,11 +218,20 @@ public abstract class ElementDefinition
             ? word.Substring(0, Math.Min(2, word.Length)).ToUpperInvariant()
             : word.ToUpperInvariant();
     }
+
+    public override string ToString()
+    {
+        return $"ActualLabel={_actualLabel},Label={Label},Icon={Icon},Tooltip={Tooltip}";
+    }
 }
 
 public sealed class ControlDefinition : ElementDefinition
 {
     public Action OnClick;
+    public override string ToString()
+    {
+        return $"ControlDefinition(OnClick={OnClick},{base.ToString()})";
+    }
 }
 
 public sealed class PanelDefinition : ElementDefinition
@@ -221,6 +241,10 @@ public sealed class PanelDefinition : ElementDefinition
     public string WindowTitle;
     public int? Width;
     public int? Height;
+    public override string ToString()
+    {
+        return $"PanelDefinition(WindowType={WindowType},Title={WindowTitle},Width={Width},Height={Height},{base.ToString()})";
+    }
 }
 
 public sealed class RuntimeElement
@@ -229,6 +253,10 @@ public sealed class RuntimeElement
     public Action OnClick;
     public GameObject WindowGO;
     public ModToolbarWindow? ModToolbarWindow;
+    public override string ToString()
+    {
+        return $"RuntimeElement(Def={Definition},OnClick={OnClick},Window={WindowGO},ModToolbarWindow={ModToolbarWindow})";
+    }
 }
 
 public static class RuntimeFactory
@@ -269,6 +297,10 @@ public static class RuntimeFactory
         var go = new GameObject($"DerailValleyModToolbar_Panel_{def.Label}");
         var win = go.AddComponent<ModToolbarWindow>();
 
+        Logger.Log($"Created gameobject={go}");
+
+        // TODO: default to hidden / make on demand to save resources
+
         if (def.Width != null)
             win.Width = (int)def.Width;
         if (def.Height != null)
@@ -278,18 +310,22 @@ public static class RuntimeFactory
 
         if (def.OnGUIContent != null)
         {
-            win.Content = def.OnGUIContent;
+            win.DrawContent = def.OnGUIContent;
         }
         else if (def.WindowType != null)
         {
+            Logger.Log($"Adding component={def.WindowType}");
+
             IModToolbarPanel theirWindow = (IModToolbarPanel)go.AddComponent(def.WindowType);
 
-            win.Content = (rect) => theirWindow.Window(rect);
+            win.DrawContent = (rect) => theirWindow.Window(rect);
         }
         else
         {
             Logger.Log("Need OnGUIContent or WindowType");
         }
+
+        Logger.Log($"Creating runtime...");
 
         var runtime = new RuntimeElement
         {
