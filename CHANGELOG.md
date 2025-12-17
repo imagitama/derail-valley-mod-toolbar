@@ -1,3 +1,9 @@
+# 1.1.0
+
+- resize panels
+- remember panel visibility and position
+- fixed panels not being removed on mod unload
+
 # 1.0.2
 
 - fixed panel glitching

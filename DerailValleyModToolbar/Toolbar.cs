@@ -18,6 +18,14 @@ public class Toolbar : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    void OnDestroy()
+    {
+        Logger.Log("Toolbar.OnDestroy");
+
+        foreach (var element in elements)
+            GameObject.Destroy(element.WindowGO);
+    }
+
     public void RemoveElement(RuntimeElement runtime)
     {
         Logger.Log($"Toolbar.RemoveElement runtime={runtime}");

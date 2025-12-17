@@ -1,7 +1,7 @@
 {
 	"Id": "DerailValleyModToolbar",
-	"Version": "1.0.2",
-	"DisplayName": "DerailValleyModToolbar",
+	"Version": "1.1.0",
+	"DisplayName": "Mod Toolbar",
 	"Author": "Jared Williams",
 	"EntryMethod": "DerailValleyModToolbar.Main.Load",
 	"ManagerVersion": "0.32.4",

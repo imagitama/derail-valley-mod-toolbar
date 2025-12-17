@@ -3,9 +3,13 @@ using System.Reflection;
 using HarmonyLib;
 using UnityModManagerNet;
 using UnityEngine;
+using System.Linq;
 
 namespace DerailValleyModToolbar;
 
+#if DEBUG
+[EnableReloading]
+#endif
 public static class Main
 {
     public static Harmony harmony;
@@ -34,6 +38,29 @@ public static class Main
             WorldStreamingInit.LoadingFinished += PatchOtherMods;
 
             modEntry.Logger.Log("DerailValleyModToolbar started");
+
+            if (settings.ShowDebugPanel)
+            {
+                var count = 20;
+
+                ModToolbarAPI.Register(modEntry).AddPanelControl(
+                    label: "Test Panel",
+                    icon: null,
+                    tooltip: "My test panel tooltip",
+                    title: "My Test Panel",
+                    onGUIContent: (Rect rect) =>
+                    {
+                        if (GUILayout.Button("Remove"))
+                            count--;
+                        if (GUILayout.Button("Add"))
+                            count++;
+
+                        for (var i = 0; i < count; i++)
+                            GUILayout.Label(string.Join(" ", Enumerable.Repeat("Here is some text.", i + 1)));
+
+                    }
+                ).Finish();
+            }
         }
         catch (Exception ex)
         {
@@ -58,6 +85,11 @@ public static class Main
     static void OnGUI(UnityModManager.ModEntry modEntry)
     {
         settings.Draw(modEntry);
+
+        if (GUILayout.Button("Reset Panel State"))
+        {
+            settings.ResetPanelStates();
+        }
     }
 
     static void OnSaveGUI(UnityModManager.ModEntry modEntry)

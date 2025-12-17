@@ -104,6 +104,7 @@ public sealed class ModRegistration
 
         _definitions.Add(new PanelDefinition
         {
+            ModEntry = _mod,
             Label = label,
             Icon = icon,
             Tooltip = tooltip,
@@ -183,6 +184,7 @@ public sealed class ModRegistration
 
 public abstract class ElementDefinition
 {
+    public ModEntry ModEntry;
     private string _label = string.Empty;
     private string _actualLabel = string.Empty;
 
@@ -301,10 +303,12 @@ public static class RuntimeFactory
 
         // TODO: default to hidden / make on demand to save resources
 
+        win.Id = Main.settings.GetIdForPanel(def);
+
         if (def.Width != null)
-            win.Width = (int)def.Width;
+            win.DefaultWidth = (int)def.Width;
         if (def.Height != null)
-            win.Height = (int)def.Height;
+            win.DefaultHeight = (int)def.Height;
 
         win.Title = def.WindowTitle;
 
@@ -323,6 +327,19 @@ public static class RuntimeFactory
         else
         {
             Logger.Log("Need OnGUIContent or WindowType");
+        }
+
+        var initialPanelState = Main.settings.GetPanelState(def);
+
+        if (initialPanelState != null)
+        {
+            Logger.Log($"Panel state visible={initialPanelState.Visible} rect={initialPanelState.Rect}");
+
+            if (initialPanelState.Visible)
+                win.Visible = true;
+
+            if (initialPanelState.Rect != null)
+                win.WindowRect = initialPanelState.Rect;
         }
 
         Logger.Log($"Creating runtime...");
